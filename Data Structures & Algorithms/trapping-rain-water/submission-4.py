@@ -1,27 +1,35 @@
 class Solution:
-    def trap(self, heights: List[int]) -> int:
-        if not heights:
-            return 0
+    def trap(self, height: List[int]) -> int:
+        l,r = 0, len(height)-1
+        leftMax, rightMax = height[l], height[r]
+        res = 0
+        while l < r:
+            if leftMax < rightMax:
+                res += max(0, leftMax -height[l])
+                l += 1
+                leftMax = max(height[l], leftMax)
+            else:
+                res += max(0, rightMax -height[r])
+                r -= 1
+                rightMax = max(rightMax, height[r])
         
-        n = len(heights)
+        return res
 
-        prefix = [0] * n
-        suffix = [0] * n
-        prefix[0] = heights[0]
-        suffix[n-1] = heights[n-1]
-        #[0, 0, 2, 2, 3, 3, 3, 3, 3, 3]
-        #[3, 3, 3, 3, 3, 3, 3, 2, 1, 0]
+
+        #O(n) space, O(n) time complexity
+        n = len(height)
+        leftMax = [0] * n
+        rightMax = [0] * n
+
         for i in range(1, n):
-            prefix[i] = max(prefix[i-1], heights[i])
+            leftMax[i] = max(leftMax[i-1], height[i-1])
         
         for i in range(n-2, -1, -1):
-            suffix[i] = max(suffix[i+1], heights[i])
+            rightMax[i] = max(rightMax[i+1], height[i+1])
         
-        total = 0
-        for i in range(n):
-            total += min(prefix[i], suffix[i]) - heights[i]
-            
-        return total        
+        res = 0
 
-       
-        
+        for i in range(n):
+            res += max(0, min(leftMax[i], rightMax[i]) - height[i])
+
+        return res
